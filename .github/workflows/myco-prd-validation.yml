@@ -31,20 +31,29 @@ jobs:
           npm ci || npm install
           npm test
 
+      - name: Checkout Myco Validator (PR #5)
+        uses: actions/checkout@v4
+        with:
+          repository: MycoIntelligence/Myco-backend
+          ref: feat/prd-validation
+          token: ${{ secrets.MYCO_PAT }}
+          path: .myco-validator
+
       - name: Run Myco PRD Validation
+        working-directory: .myco-validator
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MYCO_PAT }}
           PRD_VALIDATION: "true"
           PRD_FAIL_ON_INCONCLUSIVE: "true"
           PRD_FAIL_ON_MISSING_CREDS: "true"
           GATE_MIN_SEVERITY: "P1"
           CI_GATE: "true"
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
-          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-          CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
-          CONFLUENCE_TOKEN: ${{ secrets.CONFLUENCE_TOKEN }}
-          CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
+          LLM_PROVIDER: "openai"
+          LITELLM_BASE_URL: ${{ secrets.LITELLM_BASE_URL }}
+          LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}
+          LITELLM_MODEL: ${{ secrets.LITELLM_MODEL }}
         run: |
-          echo "Executing Myco PRD validation and merge protection..."
-          npx @myco/validator --pr-url "${{ github.event.pull_request.html_url }}"
+          echo "Installing Myco validator dependencies..."
+          npm ci
+          echo "Executing Myco PRD validation against PR #5 implementation..."
+          npx ts-node src/validatorCli.ts --pr-url "${{ github.event.pull_request.html_url }}"
