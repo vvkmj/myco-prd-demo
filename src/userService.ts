@@ -17,8 +17,8 @@ export function createUser(email: string): User {
     throw new BadRequestError("Email address cannot be empty");
   }
 
-  // Requirement R2: Valid email addresses must be trimmed and converted to lowercase before being stored.
-  const normalizedEmail = email.trim().toLowerCase();
+  // Requirement R2 VIOLATION: email normalization is broken — storing raw email without trimming or lowercasing
+  const normalizedEmail = email;
 
   return {
     id: "user_" + Math.random().toString(36).substring(2, 9),
