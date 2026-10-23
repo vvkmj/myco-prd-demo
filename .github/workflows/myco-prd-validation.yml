@@ -1,0 +1,50 @@
+name: Myco PRD Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+
+jobs:
+  validate-prd:
+    name: Myco PRD Validation & Merge Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies & Run App Tests
+        run: |
+          npm ci || npm install
+          npm test
+
+      - name: Run Myco PRD Validation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRD_VALIDATION: "true"
+          PRD_FAIL_ON_INCONCLUSIVE: "true"
+          PRD_FAIL_ON_MISSING_CREDS: "true"
+          GATE_MIN_SEVERITY: "P1"
+          CI_GATE: "true"
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
+          CONFLUENCE_TOKEN: ${{ secrets.CONFLUENCE_TOKEN }}
+          CONFLUENCE_EMAIL: ${{ secrets.CONFLUENCE_EMAIL }}
+        run: |
+          echo "Executing Myco PRD validation and merge protection..."
+          npx @myco/validator --pr-url "${{ github.event.pull_request.html_url }}"

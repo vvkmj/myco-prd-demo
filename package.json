@@ -1,0 +1,16 @@
+{
+  "name": "myco-prd-demo",
+  "version": "1.0.0",
+  "description": "Demo repository for Myco PRD-aware requirements validation and merge protection",
+  "main": "src/checkout.ts",
+  "scripts": {
+    "test": "ts-node tests/checkout.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}

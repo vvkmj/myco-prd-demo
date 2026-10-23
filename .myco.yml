@@ -1,0 +1,20 @@
+# Myco PRD-Aware Validation & Merge Protection Configuration
+version: 1
+
+prd:
+  enabled: true
+  fail_on_inconclusive: true
+  fail_on_missing_credentials: true
+  optional_policy: warn
+  min_pass_count: 1
+  sources:
+    local_docs:
+      - docs/PRD.md
+    jira:
+      project: PROJ
+    confluence:
+      space: ORDER
+
+gate:
+  min_severity: P1
+  enforce_merge_protection: true
